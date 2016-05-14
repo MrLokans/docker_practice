@@ -2,6 +2,8 @@ version: '2'
 services:
   db:
     image: postgres
+
+
   web:
     build: .
     command: gunicorn --workers=4 test.wsgi -b 0.0.0.0:8000
@@ -11,3 +13,15 @@ services:
       - "8000:8000"
     depends_on:
       - db
+
+  nginx:
+    restart: always
+    build: ./nginx/
+    ports:
+      - "80:80"
+    volumes:
+      - /www/static
+    volumes_from:
+      - web
+    links:
+      - web:web
